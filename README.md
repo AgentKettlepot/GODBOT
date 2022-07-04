@@ -1,0 +1,2 @@
+# GODBOT
+A discord bot
