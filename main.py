@@ -1,5 +1,6 @@
 import discord
-
+import os
+import Info
 
 client = discord.Client()
 
@@ -12,7 +13,10 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('I'):
+    if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-client.run('OTkzNTYxNTkxMTI5ODU0MDky.GP1AYq.7GZ0Ax7lGudFxwPy3QFldYifC9FIXEDOImuwB0')
+    if message.content.startswith('$fuck'):
+        await message.channel.send('You Too!')
+
+client.run(Info.TOKEN)
