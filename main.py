@@ -1,7 +1,7 @@
 import discord
-import os
 import Info
-
+import re
+from datetime import datetime 
 client = discord.Client()
 
 @client.event
@@ -14,9 +14,12 @@ async def on_message(message):
         return
 
     if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
-    if message.content.startswith('$fuck'):
-        await message.channel.send('You Too!')
+        await message.channel.send('Hello!'+ str(message.author))
+    
+    if message.content.startswith('/setdailymax'):
+        time = re.findall('[0-9]+', message.content)
+        print(time)
+        now = datetime.now()
+        await message.channel.send(f'{time} minute timer set')
 
 client.run(Info.TOKEN)
