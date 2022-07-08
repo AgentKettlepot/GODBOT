@@ -1,7 +1,7 @@
 import discord
 import Info
 import re
-from datetime import datetime 
+from datetime import datetime, timedelta
 import csv
 client = discord.Client()
 
@@ -13,6 +13,14 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+    users_on_time = []
+    with open('logs.csv', 'r') as f:
+        reader = csv.reader(f)
+        for line in reader:
+            users_on_time.append(line[0])
+    if message.author in users_on_time: #if the user is still in their restricted time
+        await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
+
 
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!'+ str(message.author))
@@ -20,7 +28,7 @@ async def on_message(message):
     if message.content.startswith('/setdailymax'):
         time = re.findall('[0-9]+', message.content)
         now = datetime.now()
-        end_time = now + time
+        end_time = now + + timedelta(minutes = int(time[0]))  
         with open('logs.csv', 'a') as f:
                 writer = csv.writer(f)
                 writer.writerow([message.author, now, time, end_time])
