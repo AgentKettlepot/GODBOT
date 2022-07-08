@@ -3,6 +3,7 @@ import Info
 import re
 from datetime import datetime, timedelta
 import csv
+import pandas as pd
 client = discord.Client()
 
 @client.event
@@ -13,7 +14,14 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    with open('logs.csv', 'r') as f:
+    ''' FIX THIS SECTION: SOMEHOW DELETE EVERY ROW IN .CSV FILE WHERE THE ENDTIME IS ALREADY OVER
+    now = datetime.now() #this part removes rows where the endtime has already passed
+    df = pd.read_csv('logs.csv')
+    print(df)
+    df = df[str(df.iloc[:,3]) > str(now)]
+    df.to_csv('logs.csv', index=False)
+    '''
+    with open('logs.csv', 'r') as f: #this part reads the .csv file when someone sends a message
         reader = csv.reader(f)
         for line in reader:
             if len(line) != 0:
