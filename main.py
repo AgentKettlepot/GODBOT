@@ -13,14 +13,13 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    users_on_time = []
     with open('logs.csv', 'r') as f:
         reader = csv.reader(f)
         for line in reader:
-            users_on_time.append(line[0])
-    if message.author in users_on_time: #if the user is still in their restricted time
-        await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
-
+            if len(line) != 0:
+                if str(message.author) == line[0]:
+                    await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
+                    break
 
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!'+ str(message.author))
@@ -35,9 +34,5 @@ async def on_message(message):
  
         await message.channel.send(f'{time[0]} minute timer set')
 
-
-#add a function that is async def on_repeat (idk)
-#keeps reading the .csv file, looks for anyone has messaged:
-#if message.time is within the endtime column for message.author: send message
-#remove elements where the end_time is already over
+#add a function that removes row once time_end is finished
 client.run(Info.TOKEN)
