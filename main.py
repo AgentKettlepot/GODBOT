@@ -3,7 +3,6 @@ import Info
 import re
 from datetime import datetime, timedelta
 import csv
-import pandas as pd
 client = discord.Client()
 
 @client.event
@@ -14,13 +13,17 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    ''' FIX THIS SECTION: SOMEHOW DELETE EVERY ROW IN .CSV FILE WHERE THE ENDTIME IS ALREADY OVER
-    now = datetime.now() #this part removes rows where the endtime has already passed
-    df = pd.read_csv('logs.csv')
-    print(df)
-    df = df[str(df.iloc[:,3]) > str(now)]
-    df.to_csv('logs.csv', index=False)
-    '''
+    updatedlist=[] #this part reads the .csv file and removes the users where their endtimes are over
+    with open("logs.csv",newline="") as f:
+      reader=csv.reader(f)
+      for row in reader: 
+        try:
+            if str(row[3])>str(datetime.now()):
+                updatedlist.append(row)
+        except:
+            pass
+      UpdateFile(updatedlist)
+
     with open('logs.csv', 'r') as f: #this part reads the .csv file when someone sends a message
         reader = csv.reader(f)
         for line in reader:
@@ -42,5 +45,13 @@ async def on_message(message):
  
         await message.channel.send(f'{time[0]} minute timer set')
 
-#add a function that removes row once time_end is finished
+
+def UpdateFile(updatedlist): #used to update the new log.csv file everytime a endtime is reached
+    with open("logs.csv","w",newline="") as f:
+        Writer=csv.writer(f)
+        Writer.writerow(['user', 'begin_time', 'duration', 'endtime'])
+        Writer.writerows(updatedlist)
+        print("File has been updated")
+
+
 client.run(Info.TOKEN)
