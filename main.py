@@ -3,15 +3,17 @@ import Info
 import re
 from datetime import datetime, timedelta
 import csv
-client = discord.Client()
+from discord.ext import commands
 
-@client.event
+bot = commands.Bot(".")
+
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print('We have logged in as {0.user}'.format(bot))
 
-@client.event
+@bot.event
 async def on_message(message):
-    if message.author == client.user:
+    if message.author == bot.user:
         return
     updatedlist=[] #this part reads the .csv file and removes the users where their endtimes are over
     with open("logs.csv",newline="") as f:
@@ -41,17 +43,25 @@ async def on_message(message):
         end_time = now + + timedelta(minutes = int(time[0]))  
         with open('logs.csv', 'a') as f:
                 writer = csv.writer(f)
-                writer.writerow([message.author, now, time, end_time])
+                writer.writerow([message.author, now, time[0], end_time])
  
         await message.channel.send(f'{time[0]} minute timer set')
+
+    if message.content.startswith('/onfocus'):# displays the users currently on focus mode
+        with open('logs.csv', 'r') as f: #this part reads the .csv file when someone sends a message
+            reader = csv.reader(f)
+            
+            for line in reader:
+                await message.channel.send(line)
+
 
 
 def UpdateFile(updatedlist): #used to update the new log.csv file everytime a endtime is reached
     with open("logs.csv","w",newline="") as f:
         Writer=csv.writer(f)
-        Writer.writerow(['user', 'begin_time', 'duration', 'endtime'])
+        #Writer.writerow(['user', 'begin_time', 'duration', 'endtime'])
         Writer.writerows(updatedlist)
         print("File has been updated")
 
 
-client.run(Info.TOKEN)
+bot.run(Info.TOKEN)
