@@ -29,22 +29,25 @@ async def on_message(message):
             pass
       UpdateFile(updatedlist)
 
-    with open('logs.csv', 'r') as f: #this part reads the .csv file when someone sends a message
+    with open('logs.csv', newline="") as f: #this part reads the .csv file when someone sends a message
         reader = csv.reader(f)
-        updatedlist = []
+        total = list(reader)
         count=0
-        for line in reader:
-            if len(line) != 0 and count>0:
+        for line in total:
+            print(line)
+            if len(line) != 0:
                 if str(message.author) == line[0]:
+                    print(line)
+                    #line[4] +=1
                     #increment the penalty_count part
                     await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
-                if int(line[4]) ==5:
-                    await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
-                if int(line[4]) >=6:
-                    await message.channel.send(f'{message.author}, mute incoming!')
+                    if int(line[4]) ==5:
+                        await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
+                    if int(line[4]) >=6:
+                        await message.channel.send(f'{message.author}, mute incoming!')
+                        await message.author.edit(mute = True)
             count+=1
-            updatedlist.append(line)
-        UpdateFile(updatedlist)
+        UpdateFile(total)
 
     if message.content.startswith('/cancel'):#this part cancels the user's focus mode
         with open('logs.csv', 'r') as f:
@@ -81,6 +84,5 @@ def UpdateFile(updatedlist): #used to update the new log.csv file everytime a en
     with open("logs.csv","w",newline="") as f:
         Writer=csv.writer(f)
         Writer.writerows(updatedlist)
-
 
 bot.run(Info.TOKEN)
