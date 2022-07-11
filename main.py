@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 import csv
 from discord.ext import commands
-
+import pandas as pd
 bot = commands.Bot(".")
 
 @bot.event
@@ -29,6 +29,23 @@ async def on_message(message):
             pass
       UpdateFile(updatedlist)
 
+    with open('logs.csv', 'r') as f: #this part reads the .csv file when someone sends a message
+        reader = csv.reader(f)
+        updatedlist = []
+        count=0
+        for line in reader:
+            if len(line) != 0 and count>0:
+                if str(message.author) == line[0]:
+                    #increment the penalty_count part
+                    await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
+                if int(line[4]) ==5:
+                    await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
+                if int(line[4]) >=6:
+                    await message.channel.send(f'{message.author}, mute incoming!')
+            count+=1
+            updatedlist.append(line)
+        UpdateFile(updatedlist)
+
     if message.content.startswith('/cancel'):#this part cancels the user's focus mode
         with open('logs.csv', 'r') as f:
             reader = csv.reader(f)
@@ -42,32 +59,17 @@ async def on_message(message):
                 UpdateFile(updatedlist)
                 await message.channel.send(f'{message.author} has been removed from focus mode!')
 
-
-
-    with open('logs.csv', 'r') as f: #this part reads the .csv file when someone sends a message
-        reader = csv.reader(f)
-        for line in reader:
-            if len(line) != 0:
-                if str(message.author) == line[0]:
-                    await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
-                    break
-
-
     if message.content.startswith('/setdailymax'):
         time = re.findall('[0-9]+', message.content)
         now = datetime.now()
         end_time = now + + timedelta(minutes = int(time[0]))  
         with open('logs.csv', 'a') as f:
                 writer = csv.writer(f)
-                writer.writerow([message.author, now, time[0], end_time])
+                writer.writerow([message.author, now, time[0], end_time,0])
  
         await message.channel.send(f'{time[0]} minute timer set')
 
-
-
-
-
-
+    #needs to be fixed
     if message.content.startswith('/onfocus'):# displays the users currently on focus mode
         with open('logs.csv', 'r') as f:
             reader = csv.reader(f)
