@@ -34,12 +34,9 @@ async def on_message(message):
         total = list(reader)
         count=0
         for line in total:
-            print(line)
             if len(line) != 0:
                 if str(message.author) == line[0]:
-                    print(line)
-                    #line[4] +=1
-                    #increment the penalty_count part
+                    total[count] = [line[0], line[1], line[2], line[3], int(line[4])+1]
                     await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
                     if int(line[4]) ==5:
                         await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
