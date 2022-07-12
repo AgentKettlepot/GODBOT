@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import csv
 from discord.ext import commands
 import pandas as pd
+import json 
+import random
 bot = commands.Bot(".")
 
 @bot.event
@@ -68,6 +70,17 @@ async def on_message(message):
                 writer.writerow([message.author, now, time[0], end_time,0])
  
         await message.channel.send(f'{time[0]} minute timer set')
+
+    if message.content.startswith('/inspire'): #this part returns an inspirational quote to the user
+        with open("unique_quotes.json") as JSONobject:
+            pre_data = JSONobject.read()
+            data = json.loads(pre_data)
+            random_num= random.randint(1, len(data["data"])) - 1
+            if "quote" in data["data"][random_num]:
+                quote = data["data"][random_num]["quote"]
+                author = data["data"][random_num]["author"]
+                full_quote = quote + "-" + author
+                await message.channel.send(full_quote)
 
     #needs to be fixed
     if message.content.startswith('/onfocus'):# displays the users currently on focus mode
