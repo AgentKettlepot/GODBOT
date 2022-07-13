@@ -8,7 +8,7 @@ import pandas as pd
 import json 
 import random
 bot = commands.Bot(".")
-
+commands = ['/cancel', '/onfocus', '/inspire', '/setdailymax']
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
@@ -31,23 +31,6 @@ async def on_message(message):
             pass
       UpdateFile(updatedlist)
 
-    with open('logs.csv', newline="") as f: #this part reads the .csv file when someone sends a message
-        reader = csv.reader(f)
-        total = list(reader)
-        count=0
-        for line in total:
-            if len(line) != 0:
-                if str(message.author) == line[0]:
-                    total[count] = [line[0], line[1], line[2], line[3], int(line[4])+1]
-                    await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
-                    if int(line[4]) ==5:
-                        await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
-                    if int(line[4]) >=6:
-                        await message.channel.send(f'{message.author}, mute incoming!')
-                        await message.author.edit(mute = True)
-            count+=1
-        UpdateFile(total)
-
     if message.content.startswith('/cancel'):#this part cancels the user's focus mode
         with open('logs.csv', 'r') as f:
             reader = csv.reader(f)
@@ -61,15 +44,18 @@ async def on_message(message):
                 UpdateFile(updatedlist)
                 await message.channel.send(f'{message.author} has been removed from focus mode!')
 
-    if message.content.startswith('/setdailymax'):
-        time = re.findall('[0-9]+', message.content)
-        now = datetime.now()
-        end_time = now + + timedelta(minutes = int(time[0]))  
-        with open('logs.csv', 'a') as f:
-                writer = csv.writer(f)
-                writer.writerow([message.author, now, time[0], end_time,0])
- 
-        await message.channel.send(f'{time[0]} minute timer set')
+    if message.content.startswith('/onfocus'):# displays the users currently on focus mode
+        with open('logs.csv', 'r') as f:
+            count=0
+            reader = csv.reader(f)
+            for line in csv.reader(f):
+                    print(count)
+                    if count>0:
+                        await message.channel.send(line[0])
+                    count+=1
+            if len(list(reader))==1:
+                await message.channel.send("None!")
+                
 
     if message.content.startswith('/inspire'): #this part returns an inspirational quote to the user
         with open("unique_quotes.json") as JSONobject:
@@ -82,13 +68,38 @@ async def on_message(message):
                 full_quote = quote + "-" + author
                 await message.channel.send(full_quote)
 
-    #needs to be fixed
-    if message.content.startswith('/onfocus'):# displays the users currently on focus mode
-        with open('logs.csv', 'r') as f:
+    if message.content not in commands:
+        with open('logs.csv', newline="") as f: #this part reads the .csv file when someone sends a message
             reader = csv.reader(f)
-            
-            for line in reader:
-                await message.channel.send(line)
+            total = list(reader)
+            count=0
+            for line in total:
+                if len(line) != 0:
+                    if str(message.author) == line[0]:
+                        total[count] = [line[0], line[1], line[2], line[3], int(line[4])+1]
+                        await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
+                        if int(line[4]) ==5:
+                            await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
+                        if int(line[4]) >=6:
+                            await message.channel.send(f'{message.author}, mute incoming!')
+                            await message.author.edit(mute = True)
+                count+=1
+            UpdateFile(total)
+
+
+    if message.content.startswith('/setdailymax'):
+        time = re.findall('[0-9]+', message.content)
+        now = datetime.now()
+        end_time = now + + timedelta(minutes = int(time[0]))  
+        with open('logs.csv', 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow([message.author, now, time[0], end_time,0])
+ 
+        await message.channel.send(f'{time[0]} minute timer set')
+
+
+
+
 
 def UpdateFile(updatedlist): #used to update the new log.csv file everytime a endtime is reached
     with open("logs.csv","w",newline="") as f:
