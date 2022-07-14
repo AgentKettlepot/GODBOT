@@ -17,7 +17,15 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-
+    if message.content.startswith('!help'):
+        result = """Hi! I am the Get Off Discord Bot (GODBOT)! My purpose is to make sure that you
+        stay focused. Here are my functions:
+        1) /setdailymax <int>: sets a set minute timer
+        2) /cancel: cancel the user's "focus mode\"
+        3) /onfocus: lists the users currently in focus mode
+        4) /inspire: gives a random inspiration/humorous quote
+        Please use me to stay focused! Keep working hard!"""
+        await message.channel.send(result)
     updatedlist=[] #this part reads the .csv file and removes the users where their endtimes are over
     with open("logs.csv",newline="") as f:
       reader=csv.reader(f)
@@ -56,7 +64,6 @@ async def on_message(message):
             if len(list(reader))==1:
                 await message.channel.send("None!")
                 
-
     if message.content.startswith('/inspire'): #this part returns an inspirational quote to the user
         with open("unique_quotes.json") as JSONobject:
             pre_data = JSONobject.read()
@@ -86,7 +93,6 @@ async def on_message(message):
                 count+=1
             UpdateFile(total)
 
-
     if message.content.startswith('/setdailymax'):
         time = re.findall('[0-9]+', message.content)
         now = datetime.now()
@@ -96,10 +102,6 @@ async def on_message(message):
                 writer.writerow([message.author, now, time[0], end_time,0])
  
         await message.channel.send(f'{time[0]} minute timer set')
-
-
-
-
 
 def UpdateFile(updatedlist): #used to update the new log.csv file everytime a endtime is reached
     with open("logs.csv","w",newline="") as f:
