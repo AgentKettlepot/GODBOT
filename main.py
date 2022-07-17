@@ -86,10 +86,12 @@ async def on_message(message):
                         total[count] = [line[0], line[1], line[2], line[3], int(line[4])+1]
                         await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
                         if int(line[4]) ==5:
-                            await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
+                            await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server ban for 5 minutes!')
                         if int(line[4]) >=6:
-                            await message.channel.send(f'{message.author}, mute incoming!')
-                            await message.author.edit(mute = True)
+                            await message.channel.send(f'{message.author}, ban incoming!')
+                            await message.author.edit(mute = True) #TRY THIS FIRST
+                            #IF banning is too hard, try "@message.author is a loser"
+
                 count+=1
             UpdateFile(total)
 
@@ -102,6 +104,7 @@ async def on_message(message):
                 writer.writerow([message.author, now, time[0], end_time,0])
  
         await message.channel.send(f'{time[0]} minute timer set')
+
 
 def UpdateFile(updatedlist): #used to update the new log.csv file everytime a endtime is reached
     with open("logs.csv","w",newline="") as f:
