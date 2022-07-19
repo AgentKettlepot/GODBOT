@@ -93,6 +93,7 @@ async def on_message(message):
                             #find API or smth later instead of hard coding some bad words
                             await message.channel.send(f'{message.author.mention}, you are {mean_phrases[int(index)]}!!')
                             await message.author.edit(mute = True)
+
                 count+=1
             UpdateFile(total)
 
@@ -105,6 +106,7 @@ async def on_message(message):
                 writer.writerow([message.author, now, time[0], end_time,0])
  
         await message.channel.send(f'{time[0]} minute timer set')
+
 
 def UpdateFile(updatedlist): #used to update the new log.csv file everytime a endtime is reached
     with open("logs.csv","w",newline="") as f:
