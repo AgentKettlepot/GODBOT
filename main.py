@@ -8,7 +8,7 @@ import pandas as pd
 import json 
 import random
 bot = commands.Bot(".")
-commands = ['/cancel', '/onfocus', '/inspire', '/setdailymax']
+commands = ['/cancel', '/onfocus', '/inspire', '/setdailymax', '!help']
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
@@ -61,7 +61,7 @@ async def on_message(message):
                     if count>0:
                         await message.channel.send(line[0])
                     count+=1
-            if len(list(reader))==1:
+            if len(list(reader))==0:
                 await message.channel.send("None!")
                 
     if message.content.startswith('/inspire'): #this part returns an inspirational quote to the user
@@ -86,9 +86,12 @@ async def on_message(message):
                         total[count] = [line[0], line[1], line[2], line[3], int(line[4])+1]
                         await message.channel.send(f'{message.author} should NOT be on Discord!!!!')
                         if int(line[4]) ==5:
-                            await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in a server mute for 5 minutes!')
+                            await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in bullying!')
                         if int(line[4]) >=6:
-                            await message.channel.send(f'{message.author}, mute incoming!')
+                            mean_phrases = ['stinky', 'stupid']
+                            index = random.random() * len(mean_phrases)
+                            #find API or smth later instead of hard coding some bad words
+                            await message.channel.send(f'{message.author.mention}, you are {mean_phrases[int(index)]}!!')
                             await message.author.edit(mute = True)
                 count+=1
             UpdateFile(total)
