@@ -57,12 +57,11 @@ async def on_message(message):
             count=0
             reader = csv.reader(f)
             for line in csv.reader(f):
-                    print(count)
                     if count>0:
                         await message.channel.send(line[0])
                     count+=1
             if len(list(reader))==0:
-                await message.channel.send("None!")
+                await message.channel.send("------------")
                 
     if message.content.startswith('/inspire'): #this part returns an inspirational quote to the user
         with open("unique_quotes.json") as JSONobject:
@@ -88,7 +87,7 @@ async def on_message(message):
                         if int(line[4]) ==5:
                             await message.channel.send(f'{message.author}, this is your 5th warning! The next text will result in bullying!')
                         if int(line[4]) >=6:
-                            mean_phrases = ['stinky', 'stupid']
+                            mean_phrases = ['stinky', 'stupid', 'annoying', 'ugly', 'trash']
                             index = random.random() * len(mean_phrases)
                             #find API or smth later instead of hard coding some bad words
                             await message.channel.send(f'{message.author.mention}, you are {mean_phrases[int(index)]}!!')
